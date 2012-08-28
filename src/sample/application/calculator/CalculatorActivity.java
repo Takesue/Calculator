@@ -32,6 +32,8 @@ public class CalculatorActivity extends Activity {
 	}
 
 	public String strTemp = "";
+	public int operator = 0;
+	public String strResult = "0";
 
 	public void numKeyOnClic(View v) {
 		String strInkey = (String)((Button)v).getText();
@@ -75,6 +77,28 @@ public class CalculatorActivity extends Activity {
 		((TextView)this.findViewById(R.id.displayPanel)).setText(fText);
 	}
 
+	public void operatorKeyOnClick(View v) {
+		if (this.operator != 0) {
+			if (this.strTemp.length() > 0) {
+				this.strResult = doCalc();
+				this.showNumber(this.strResult);
+			}
+		}
+		else {
+			if (this.strTemp.length() > 0) {
+				this.strResult = this.strTemp;
+			}
+		}
+		
+		this.strTemp = "";
+		
+		if (v.getId() == R.id.keypadEq) {
+			this.operator = 0;
+		}
+		else {
+			this.operator = v.getId();
+		}
+	}
 
 //	public void numKeyOnClic(View v) {
 //		Button button = (Button) v;
