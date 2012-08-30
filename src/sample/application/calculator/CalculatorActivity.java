@@ -1,5 +1,6 @@
 package sample.application.calculator;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CalculatorActivity extends Activity {
 
@@ -17,6 +19,10 @@ public class CalculatorActivity extends Activity {
 
 	// 表示されていた数字を格納する領域
 	public String preNumber = null;
+
+	public String strTemp = "";
+	public Integer operator = 0;
+	public String strResult = "0";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -30,10 +36,6 @@ public class CalculatorActivity extends Activity {
 		this.getMenuInflater().inflate(R.menu.activity_calculator, menu);
 		return true;
 	}
-
-	public String strTemp = "";
-	public int operator = 0;
-	public String strResult = "0";
 
 	public void numKeyOnClic(View v) {
 		String strInkey = (String)((Button)v).getText();
@@ -49,7 +51,6 @@ public class CalculatorActivity extends Activity {
 		else {
 			this.strTemp = this.strTemp + strInkey;
 		}
-
 		this.showNumber(this.strTemp);
 
 	}
@@ -75,29 +76,6 @@ public class CalculatorActivity extends Activity {
 			fText = "0";
 		}
 		((TextView)this.findViewById(R.id.displayPanel)).setText(fText);
-	}
-
-	public void operatorKeyOnClick(View v) {
-		if (this.operator != 0) {
-			if (this.strTemp.length() > 0) {
-				this.strResult = doCalc();
-				this.showNumber(this.strResult);
-			}
-		}
-		else {
-			if (this.strTemp.length() > 0) {
-				this.strResult = this.strTemp;
-			}
-		}
-		
-		this.strTemp = "";
-		
-		if (v.getId() == R.id.keypadEq) {
-			this.operator = 0;
-		}
-		else {
-			this.operator = v.getId();
-		}
 	}
 
 //	public void numKeyOnClic(View v) {
@@ -135,44 +113,93 @@ public class CalculatorActivity extends Activity {
 		tv.setText("0");
 	}
 	
-	public void equalKeyOnClic(View v) {
+//	public void equalKeyOnClic(View v) {
+//
+//		// 表示中の文字を取得
+//		TextView tv = (TextView) this.findViewById(R.id.displayPanel);
+//		
+//		if ((preNumber != null) && (funcKey != null)) {
+//			
+//			// Integer型に変換
+//			Integer i_preNumber = Integer.parseInt(preNumber);
+//			
+//			// Integer型に変換
+//			String nextNumber = tv.getText().toString();
+//			Integer i_nextNumber = Integer.parseInt(nextNumber);
+//
+//			if (funcKey.equals("+")) {
+//				Integer i = i_preNumber + i_nextNumber;
+//				Log.d(this.getLocalClassName(), "[加算結果の確認]" + i.toString());
+//				tv.setText(i.toString());
+//			}
+//			else if (funcKey.equals("-")) {
+//			}
+//			else if (funcKey.equals("*")) {
+//			}
+//			else if (funcKey.equals("/")) {
+//			}
+//		}
+//
+//		// 演算終了後は値をクリアします
+//		preNumber = null;
+//		funcKey = null;
+//	}
 
-		// 表示中の文字を取得
-		TextView tv = (TextView) this.findViewById(R.id.displayPanel);
-		
-		if ((preNumber != null) && (funcKey != null)) {
-			
-			// Integer型に変換
-			Integer i_preNumber = Integer.parseInt(preNumber);
-			
-			// Integer型に変換
-			String nextNumber = tv.getText().toString();
-			Integer i_nextNumber = Integer.parseInt(nextNumber);
-
-			if (funcKey.equals("+")) {
-				Integer i = i_preNumber + i_nextNumber;
-				Log.d(this.getLocalClassName(), "[加算結果の確認]" + i.toString());
-				tv.setText(i.toString());
-			}
-			else if (funcKey.equals("-")) {
-				// TODO
-				
-			}
-			else if (funcKey.equals("*")) {
-				// TODO
-				
-			} else if (funcKey.equals("/")) {
-				// TODO
+	public void operatorKeyOnClick(View v) {
+		if (this.operator != 0) {
+			if (this.strTemp.length() > 0) {
+				this.strResult = this.doCalc();
+				this.showNumber(this.strResult);
 			}
 		}
-
-		// 演算終了後は値をクリアします
-		preNumber = null;
-		funcKey = null;
+		else {
+			if (this.strTemp.length() > 0) {
+				this.strResult = this.strTemp;
+			}
+		}
+		this.strTemp = "";
+		
+		if (v.getId() == R.id.keypadEq) {
+			this.operator = 0;
+		}
+		else {
+			this.operator = v.getId();
+		}
 	}
-	
-	
-	private void doCalc() {
+
+
+	private String doCalc() {
+		BigDecimal bd1 = new BigDecimal(this.strResult);
+		BigDecimal bd2 = new BigDecimal(this.strTemp);
+		BigDecimal result = BigDecimal.ZERO;
+		
+		switch (this.operator) {
+		case R.id.keypadAdd:
+			result = bd1.add(bd2);
+			break;
+		case R.id.keypadSub:
+			result = bd1.subtract(bd2);
+			break;
+		case R.id.keypadMulti:
+			result = bd1.multiply(bd2);
+			break;
+		case R.id.keypadDiv:
+			if (!bd2.equals(BigDecimal.ZERO)) {
+				result = bd1.divide(bd2, 12, 3);
+			}
+			else {
+				Toast toast = Toast.makeText(this, R.string.toast_div_by_zero, 1000);
+				toast.show();
+			}
+			break;
+		}
+		
+		if (result.toString().indexOf(".") >= 0) {
+			return result.toString().replaceAll("¥¥.0+$|0+$", "");
+		}
+		else {
+			return result.toString();
+		}
 	}
 	
 }
