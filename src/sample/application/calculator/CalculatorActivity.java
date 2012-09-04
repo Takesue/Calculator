@@ -2,9 +2,9 @@ package sample.application.calculator;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 public class CalculatorActivity extends Activity {
 
-	// 押された演算キーを格納する領域
+	// 押された演算キーを格納する領域	
 	public String funcKey = null;
 
 	// 表示されていた数字を格納する領域
@@ -23,12 +23,21 @@ public class CalculatorActivity extends Activity {
 	public String strTemp = "";
 	public Integer operator = 0;
 	public String strResult = "0";
-
+	
+	public static final int SS = 1;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_calculator);
-		
+		this.readPreferences();
+	}
+	
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		this.writePreferences();
 	}
 
 	@Override
@@ -202,4 +211,20 @@ public class CalculatorActivity extends Activity {
 		}
 	}
 	
+	public void writePreferences() {
+		SharedPreferences.Editor editor = this.getSharedPreferences("CalcPrefs", MODE_PRIVATE).edit();
+		editor.putString("strTemp", this.strTemp);
+		editor.putString("strResult", this.strResult);
+		editor.putInt("operator", this.operator);
+		editor.putString("strDisplay", 
+				((TextView)this.findViewById(R.id.displayPanel)).getText().toString());
+	}
+	
+	public void readPreferences() {
+		SharedPreferences prefs = this.getSharedPreferences("CalcPrefs", MODE_PRIVATE);
+		this.strTemp = prefs.getString("strTemp", "");
+		this.strResult = prefs.getString("strResult", "0");
+		this.operator = prefs.getInt("operator", 0);
+		((TextView)this.findViewById(R.id.displayPanel)).setText(prefs.getString("strDisplay", ""));
+	}
 }
