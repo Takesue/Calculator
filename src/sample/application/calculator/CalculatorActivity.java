@@ -2,15 +2,19 @@ package sample.application.calculator;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.ClipboardManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Vibrator;
 
 public class CalculatorActivity extends Activity {
 
@@ -25,6 +29,7 @@ public class CalculatorActivity extends Activity {
 	public String strResult = "0";
 	
 	public static final int SS = 1;
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,6 +52,8 @@ public class CalculatorActivity extends Activity {
 	}
 
 	public void numKeyOnClic(View v) {
+		((Vibrator)this.getSystemService(VIBRATOR_SERVICE)).vibrate(50);
+		
 		String strInkey = (String)((Button)v).getText();
 
 		if (".".equals(strInkey)) {
@@ -105,7 +112,8 @@ public class CalculatorActivity extends Activity {
 //	}
 
 	public void addKeyOnClic(View v) {
-		
+		((Vibrator)this.getSystemService(VIBRATOR_SERVICE)).vibrate(50);
+
 		// 押された演算キーを格納する
 		Button button = (Button) v;
 		funcKey = button.getText().toString();
@@ -155,6 +163,8 @@ public class CalculatorActivity extends Activity {
 //	}
 
 	public void operatorKeyOnClick(View v) {
+		((Vibrator)this.getSystemService(VIBRATOR_SERVICE)).vibrate(50);
+
 		if (this.operator != 0) {
 			if (this.strTemp.length() > 0) {
 				this.strResult = this.doCalc();
@@ -211,8 +221,37 @@ public class CalculatorActivity extends Activity {
 		}
 	}
 	
+
+	public void functionKeyOnClick(View v) {
+		switch (v.getId()) {
+		case R.id.keypadAC:
+			this.strTemp = "";
+			this.strResult = "0";
+			this.operator = 0;
+			break;
+		case R.id.keypadC:
+			this.strTemp = "";
+			break;
+		case R.id.keypadBS:
+			if (this.strTemp.length() == 0) {
+				return;
+			}
+			else {
+				this.strTemp = this.strTemp.substring(0, this.strTemp.length() -1);
+			}
+			break;
+		case R.id.keypadCopy:
+			ClipboardManager cm = (ClipboardManager) this.getSystemService(Context.CLIPBOARD_SERVICE);
+			cm.setText(((TextView)this.findViewById(R.id.displayPanel)).getText());
+			break;
+		}
+		this.showNumber(this.strTemp);
+		
+	}
+	
 	public void writePreferences() {
-		SharedPreferences.Editor editor = this.getSharedPreferences("CalcPrefs", MODE_PRIVATE).edit();
+		SharedPreferences prefs = this.getSharedPreferences("CalcPrefs", MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
 		editor.putString("strTemp", this.strTemp);
 		editor.putString("strResult", this.strResult);
 		editor.putInt("operator", this.operator);
