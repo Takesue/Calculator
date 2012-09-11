@@ -2,7 +2,6 @@ package sample.application.calculator;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
@@ -52,7 +51,7 @@ public class CalculatorActivity extends Activity {
 	}
 
 	public void numKeyOnClic(View v) {
-		((Vibrator)this.getSystemService(VIBRATOR_SERVICE)).vibrate(50);
+		((Vibrator)this.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(50);
 		
 		String strInkey = (String)((Button)v).getText();
 
@@ -112,19 +111,19 @@ public class CalculatorActivity extends Activity {
 //	}
 
 	public void addKeyOnClic(View v) {
-		((Vibrator)this.getSystemService(VIBRATOR_SERVICE)).vibrate(50);
+		((Vibrator)this.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(50);
 
 		// 押された演算キーを格納する
 		Button button = (Button) v;
-		funcKey = button.getText().toString();
-		Log.d(this.getLocalClassName(), "[保存した演算キーの確認]" + funcKey);
+		this.funcKey = button.getText().toString();
+		Log.d(this.getLocalClassName(), "[保存した演算キーの確認]" + this.funcKey);
 		
 		// 表示中の文字を取得
 		TextView tv = (TextView) this.findViewById(R.id.displayPanel);
 		
 		// 数字文字列をString型として格納
-		preNumber = tv.getText().toString();
-		Log.d(this.getLocalClassName(), "[保存した数字文字列の確認]" + preNumber);
+		this.preNumber = tv.getText().toString();
+		Log.d(this.getLocalClassName(), "[保存した数字文字列の確認]" + this.preNumber);
 		
 		// 表示を０に戻す
 		tv.setText("0");
@@ -163,7 +162,7 @@ public class CalculatorActivity extends Activity {
 //	}
 
 	public void operatorKeyOnClick(View v) {
-		((Vibrator)this.getSystemService(VIBRATOR_SERVICE)).vibrate(50);
+		((Vibrator)this.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(50);
 
 		if (this.operator != 0) {
 			if (this.strTemp.length() > 0) {
@@ -243,14 +242,14 @@ public class CalculatorActivity extends Activity {
 		case R.id.keypadCopy:
 			ClipboardManager cm = (ClipboardManager) this.getSystemService(Context.CLIPBOARD_SERVICE);
 			cm.setText(((TextView)this.findViewById(R.id.displayPanel)).getText());
-			break;
+			return;
 		}
 		this.showNumber(this.strTemp);
 		
 	}
 	
 	public void writePreferences() {
-		SharedPreferences prefs = this.getSharedPreferences("CalcPrefs", MODE_PRIVATE);
+		SharedPreferences prefs = this.getSharedPreferences("CalcPrefs", Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putString("strTemp", this.strTemp);
 		editor.putString("strResult", this.strResult);
@@ -260,7 +259,7 @@ public class CalculatorActivity extends Activity {
 	}
 	
 	public void readPreferences() {
-		SharedPreferences prefs = this.getSharedPreferences("CalcPrefs", MODE_PRIVATE);
+		SharedPreferences prefs = this.getSharedPreferences("CalcPrefs", Context.MODE_PRIVATE);
 		this.strTemp = prefs.getString("strTemp", "");
 		this.strResult = prefs.getString("strResult", "0");
 		this.operator = prefs.getInt("operator", 0);
