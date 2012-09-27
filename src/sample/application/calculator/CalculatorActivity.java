@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Vibrator;
 
+
 public class CalculatorActivity extends Activity {
 
 	// 押された演算キーを格納する領域	
